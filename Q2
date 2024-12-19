@@ -1,0 +1,117 @@
+#include<stdio.h>
+#include<stdlib.h>
+// Define the structure for the tree node
+typedef struct tree {
+    struct tree *left;
+    int info;
+    struct tree *right;
+} NODE;
+// Function to create a new node and insert it into the binary search tree
+NODE* create(NODE *t, int info) {
+    if (t == NULL) {
+        // Allocate memory for the new node
+        t = (NODE*)malloc(sizeof(NODE));
+        t->left = NULL;
+        t->info = info;
+        t->right = NULL;
+        return t;
+    }
+    // If info is smaller or equal, insert it into the left subtree
+    if (t->info >= info) {
+        t->left = create(t->left, info);
+    }
+    // Otherwise, insert it into the right subtree
+    else {
+        t->right = create(t->right, info);
+    }
+    return t;
+}
+// Function to display the tree structure (in a tree-like format)
+void display(NODE *t, int lvl) {
+    if (t) {
+        // Recursively display the right subtree
+        display(t->right, lvl + 4);
+        
+        // Print the current node with indentation based on level
+        printf("\n");
+        for (int i = 0; i < lvl; i++) {
+            printf(" ");
+        }
+        printf("%d", t->info);
+        
+        // Recursively display the left subtree
+        display(t->left, lvl + 4);
+    }
+}
+// Preorder traversal: Visit root, left subtree, right subtree
+void preorder(NODE *t) {
+    if (t) {
+        printf(" %d,", t->info);  // Print the root
+        preorder(t->left);         // Visit the left subtree
+        preorder(t->right);        // Visit the right subtree
+    }
+}
+// Postorder traversal: Visit left subtree, right subtree, then root
+void postorder(NODE *t) {
+    if (t) {
+        postorder(t->left);        // Visit the left subtree
+        postorder(t->right);       // Visit the right subtree
+        printf(" %d,", t->info);   // Print the root
+    }
+}
+// Inorder traversal: Visit left subtree, root, then right subtree
+void inorder(NODE *t) {
+    if (t) {
+        inorder(t->left);         // Visit the left subtree
+        printf(" %d,", t->info);  // Print the root
+        inorder(t->right);        // Visit the right subtree
+    }
+}
+int main() {
+    NODE *start = NULL;
+    int ch, itm;
+
+    do {
+        printf("\t1. Insert node\n");
+        printf("\t2. PreOrder\n");
+        printf("\t3. InOrder\n");
+        printf("\t4. PostOrder\n");
+        printf("\t5. Display Tree\n");
+        printf("\t6. Exit\n");
+        printf("\tEnter choice: ");
+        scanf("%d", &ch);
+
+        switch (ch) {
+            case 1:
+                printf("\tEnter item: ");
+                scanf("%d", &itm);
+                start = create(start, itm);  // Insert a new node
+                break;
+            case 2:
+                printf("PreOrder Traversal:");
+                preorder(start);  // Preorder traversal
+                printf("\n");
+                break;
+            case 3:
+                printf("InOrder Traversal:");
+                inorder(start);   // Inorder traversal
+                printf("\n");
+                break;
+            case 4:
+                printf("PostOrder Traversal:");
+                postorder(start); // Postorder traversal
+                printf("\n");
+                break;
+            case 5:
+                printf("Tree Structure:\n");
+                display(start, 1);  // Display the tree structure
+                break;
+            case 6:
+                break;
+            default:
+                printf("\tWrong choice\n");
+        }
+    } while (ch != 6);
+
+    return 0;
+}
