@@ -1,0 +1,48 @@
+#include <stdio.h>
+
+#define MAX_SIZE 100 // Maximum size of the array
+
+// Function to sort an array using selection sort
+void selectionSort(int array[], int size) {
+    for (int i = 0; i < size - 1; i++) {
+        // Find the minimum element in the unsorted portion of the array
+        int minIndex = i;
+        for (int j = i + 1; j < size; j++) {
+            if (array[j] < array[minIndex]) {
+                minIndex = j;
+            }
+        }
+        // Swap the minimum element with the first element of the unsorted portion
+        int temp = array[i];
+        array[i] = array[minIndex];
+        array[minIndex] = temp;
+    }
+}
+
+int main() {
+    int size;
+
+    // Input the size of the array
+    printf("Enter the size of the array: ");
+    scanf("%d", &size);
+
+    int array[MAX_SIZE];
+
+    // Input the elements of the array
+    printf("Enter the elements of the array: ");
+    for (int i = 0; i < size; i++) {
+        scanf("%d", &array[i]);
+    }
+
+    // Sort the array using selection sort
+    selectionSort(array, size);
+
+    // Output the sorted array
+    printf("Sorted array:");
+    for (int i = 0; i < size; i++) {
+        printf(" %d", array[i]);
+    }
+    printf("\n");
+
+    return 0;
+}
