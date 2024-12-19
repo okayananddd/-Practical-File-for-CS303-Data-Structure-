@@ -1,0 +1,165 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+// Define the structure for the tree node
+struct TreeNode {
+    int data;
+    struct TreeNode* left;
+    struct TreeNode* right;
+};
+// Function to delete the entire tree (free memory)
+struct TreeNode* makeEmpty(struct TreeNode* root) {
+    if (root != NULL) {
+        makeEmpty(root->left);
+        makeEmpty(root->right);
+        free(root);
+    }
+    return NULL;
+}
+
+// Function to insert a new node into the tree
+struct TreeNode* insert(struct TreeNode* root, int x) {
+    if (root == NULL) {
+        root = malloc(sizeof(struct TreeNode));  // Allocate memory for a new node
+        root->data = x;
+        root->left = root->right = NULL;
+    } else if (x < root->data) {
+        root->left = insert(root->left, x);
+    } else if (x > root->data) {
+        root->right = insert(root->right, x);
+    }
+    return root;
+}
+
+// Function to find the node with the minimum value
+struct TreeNode* findMin(struct TreeNode* root) {
+    if (root == NULL)
+        return NULL;
+    else if (root->left == NULL)
+        return root;
+    else
+        return findMin(root->left);
+}
+
+// Function to find the node with the maximum value
+struct TreeNode* findMax(struct TreeNode* root) {
+    if (root == NULL)
+        return NULL;
+    else if (root->right == NULL)
+        return root;
+    else
+        return findMax(root->right);
+}
+
+// Function to find a node with a specific value
+struct TreeNode* find(struct TreeNode* root, int x) {
+    if (root == NULL)
+        return NULL;
+    else if (x < root->data)
+        return find(root->left, x);
+    else if (x > root->data)
+        return find(root->right, x);
+    else
+        return root;
+}
+
+// Function to find the height of the tree
+int findHeight(struct TreeNode* root) {
+    int lefth, righth;
+    if (root == NULL)
+        return -1;  // Base case: empty tree
+    lefth = findHeight(root->left);
+    righth = findHeight(root->right);
+    return (lefth > righth ? lefth : righth) + 1;  // Return the height of the tree
+}
+
+// Function to delete a node from the tree
+struct TreeNode* delete(struct TreeNode* root, int x) {
+    struct TreeNode* temp;
+    if (root == NULL)
+        return NULL;
+    else if (x < root->data)
+        root->left = delete(root->left, x);
+    else if (x > root->data)
+        root->right = delete(root->right, x);
+    else if (root->left && root->right) {
+        temp = findMin(root->right);  // Find the minimum value node in the right subtree
+        root->data = temp->data;      // Replace root's data with the minimum value
+        root->right = delete(root->right, root->data);  // Delete the minimum node
+    } else {
+        temp = root;
+        if (root->left == NULL)       // If there is no left child
+            root = root->right;
+        else if (root->right == NULL) // If there is no right child
+            root = root->left;
+        free(temp);  // Free memory
+    }
+    return root;
+}
+
+// Function to perform inorder traversal of the tree
+void inorder(struct TreeNode* root) {
+    if (root == NULL)
+        return;
+    inorder(root->left);
+    printf("%d ", root->data);
+    inorder(root->right);
+}
+
+int main() {
+    struct TreeNode* root = NULL;
+    struct TreeNode* temp;
+
+    // Insert nodes into the tree
+    root = insert(root, 15);
+    root = insert(root, 10);
+    root = insert(root, 25);
+    root = insert(root, 7);
+    printf("Height: %d\n", findHeight(root));
+    
+    root = insert(root, 13);
+    root = insert(root, 18);
+    root = insert(root, 30);
+    printf("Height: %d\n", findHeight(root));
+    
+    root = insert(root, 3);
+    root = insert(root, 8);
+    root = insert(root, 16);
+    printf("Height: %d\n", findHeight(root));
+    
+    root = insert(root, 22);
+    root = insert(root, 35);
+    
+    // Inorder traversal of the tree
+    inorder(root);
+    printf("\n");
+
+    // Find and print the maximum and minimum elements
+    temp = findMax(root);
+    printf("Max Element: %d\n", temp->data);
+    
+    temp = findMin(root);
+    printf("Min Element: %d\n", temp->data);
+
+    // Deletion of some nodes
+    root = delete(root, 8);
+    root = delete(root, 16);
+    inorder(root);
+    printf("\n");
+
+    root = delete(root, 18);
+    inorder(root);
+    printf("\n");
+
+    root = delete(root, 10);
+    inorder(root);
+    printf("\n");
+
+    root = delete(root, 35);
+    inorder(root);
+    printf("\n");
+    // Make the tree empty
+    root = makeEmpty(root);
+
+    return 0;
+}
