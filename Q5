@@ -1,0 +1,117 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Function to swap the content of two elements
+void swapping(int *a, int *b) {
+    int temp;
+    temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+// Function to display the array
+void display(int *array, int size) {
+    for (int i = 0; i < size; i++) {
+        printf("%d ", array[i]);
+    }
+    printf("\n");
+}
+
+// Function to merge two sub-arrays
+void merge(int *array, int l, int m, int r) {
+    int i, j, k, nl, nr;
+
+    // Size of left and right sub-arrays
+    nl = m - l + 1;
+    nr = r - m;
+
+    // Temporary arrays to hold left and right sub-arrays
+    int *larr = (int*)malloc(nl * sizeof(int));
+    int *rarr = (int*)malloc(nr * sizeof(int));
+
+    // Fill left and right sub-arrays
+    for (i = 0; i < nl; i++)
+        larr[i] = array[l + i];
+    for (j = 0; j < nr; j++)
+        rarr[j] = array[m + 1 + j];
+
+    i = 0;
+    j = 0;
+    k = l;
+
+    // Merge the temporary arrays back into the real array
+    while (i < nl && j < nr) {
+        if (larr[i] <= rarr[j]) {
+            array[k] = larr[i];
+            i++;
+        } else {
+            array[k] = rarr[j];
+            j++;
+        }
+        k++;
+    }
+
+    // Copy the remaining elements of left sub-array, if any
+    while (i < nl) {
+        array[k] = larr[i];
+        i++;
+        k++;
+    }
+
+    // Copy the remaining elements of right sub-array, if any
+    while (j < nr) {
+        array[k] = rarr[j];
+        j++;
+        k++;
+    }
+
+    // Free dynamically allocated memory
+    free(larr);
+    free(rarr);
+}
+
+// Function to implement Merge Sort
+void mergeSort(int *array, int l, int r) {
+    if (l < r) {
+        int m = l + (r - l) / 2;
+
+        // Sort the first and second halves
+        mergeSort(array, l, m);
+        mergeSort(array, m + 1, r);
+
+        // Merge the sorted halves
+        merge(array, l, m, r);
+    }
+}
+
+int main() {
+    int n;
+    
+    // Input the number of elements
+    printf("Enter the number of elements: ");
+    scanf("%d", &n);
+
+    // Dynamically allocate memory for the array
+    int *arr = (int*)malloc(n * sizeof(int));
+
+    // Input the array elements
+    printf("Enter elements:\n");
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &arr[i]);
+    }
+
+    // Display the array before sorting
+    printf("Array before Sorting: ");
+    display(arr, n);
+
+    // Perform merge sort
+    mergeSort(arr, 0, n - 1);
+
+    // Display the array after sorting
+    printf("Array after Sorting: ");
+    display(arr, n);
+
+    // Free the dynamically allocated memory
+    free(arr);
+            return 0;
+}
