@@ -1,0 +1,100 @@
+#include <stdio.h>
+#include <stdlib.h>  
+// Use standard malloc/free from stdlib.h
+
+// Define the queue node structure
+typedef struct queue {
+    int data;
+    struct queue *next;
+} NODE;
+
+// Function to delete the front element of the queue
+NODE* delete(NODE *front) {
+    NODE *temp;
+    if (front == NULL) {
+        printf("Queue is empty\n");
+    } else {
+        temp = front;
+        front = front->next;
+        free(temp);  // Free the memory of the dequeued node
+    }
+    return front; // Return the updated front pointer
+}
+
+// Function to insert an element at the rear of the queue
+NODE* insert(NODE *rear, int data) {
+    NODE *temp;
+    temp = (NODE*)malloc(sizeof(NODE)); // Allocate memory for new node
+    temp->data = data;
+    temp->next = NULL; // The new node is now the last one
+
+    if (rear == NULL) {
+        rear = temp; // If the queue is empty, rear points to the new node
+    } else {
+        rear->next = temp; // Link the new node to the last node
+        rear = temp; // Move rear to the new node
+    }
+    return rear; // Return the updated rear pointer
+}
+
+// Function to display the elements of the queue
+void display(NODE *front) {
+    NODE *t;
+    if (front == NULL) {
+        printf("Queue is empty\n");
+    } else {
+        t = front;
+        while (t) {
+            printf("%d, ", t->data);
+            t = t->next; // Traverse the list
+        }
+        printf("\n");
+    }
+}
+
+int main() {
+    NODE *front = NULL, *rear = NULL; // Initially both front and rear are NULL
+
+    int h, data;
+    do {
+        // Main menu
+        printf("\nMain Menu\n1] Insert\n2] Display\n3] Delete\n4] Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &h);
+
+        switch (h) {
+            case 1:
+                // Insert operation
+                printf("Enter data: ");
+                scanf("%d", &data);
+                rear = insert(rear, data);
+                if (front == NULL) {
+                    front = rear; // If the queue was empty, set front to rear
+                }
+                break;
+
+            case 2:
+                // Display the queue
+                display(front);
+                break;
+
+            case 3:
+                // Delete operation
+                front = delete(front);
+                if (front == NULL) {
+                    rear = NULL; // If the queue is empty, set rear to NULL
+                }
+                break;
+
+            case 4:
+                // Exit
+                printf("Exiting...\n");
+                break;
+
+            default:
+                // Invalid option
+                printf("Wrong Option\n");
+        }
+    } while (h != 4); // Repeat until the user chooses to exit
+    return 0;
+}
