@@ -1,0 +1,91 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_EDGES 20
+#define MAX_VERTICES 10
+
+// Structure to represent an edge
+struct Edge {
+    int src, dest, weight;
+};
+
+// Structure to represent a subset for union-find
+struct Subset {
+    int parent;
+    int rank;
+};
+
+// Function to compare two edges (used for sorting)
+int compareEdges(const void* a, const void* b) {
+    return ((struct Edge*)a)->weight - ((struct Edge*)b)->weight;
+}
+
+// Find function in union-find
+int find(struct Subset subsets[], int i) {
+    if (subsets[i].parent != i) {
+        subsets[i].parent = find(subsets, subsets[i].parent);  // Path compression
+    }
+    return subsets[i].parent;
+}
+
+// Union function in union-find
+void unionSets(struct Subset subsets[], int x, int y) {
+    int xroot = find(subsets, x);
+    int yroot = find(subsets, y);
+
+    if (subsets[xroot].rank < subsets[yroot].rank) {
+        subsets[xroot].parent = yroot;
+    } else if (subsets[xroot].rank > subsets[yroot].rank) {
+        subsets[yroot].parent = xroot;
+    } else {
+        subsets[yroot].parent = xroot;
+        subsets[xroot].rank++;
+    }
+}
+
+// Function to implement Kruskal's Algorithm
+void kruskalMST(struct Edge edges[], int V, int E) {
+    // Step 1: Sort all edges in increasing order of their weights
+    qsort(edges, E, sizeof(edges[0]), compareEdges);
+
+    struct Subset subsets[V];
+    // Initialize subsets for union-find
+    for (int v = 0; v < V; v++) {
+        subsets[v].parent = v;
+        subsets[v].rank = 0;
+    }
+
+    // Step 2: Pick the smallest edge and check if it forms a cycle
+    int mstEdges = 0;
+    for (int i = 0; i < E && mstEdges < V - 1; i++) {
+        struct Edge nextEdge = edges[i];
+        int x = find(subsets, nextEdge.src);
+        int y = find(subsets, nextEdge.dest);
+
+        // If including this edge does not cause a cycle, include it in the MST
+        if (x != y) {
+            printf("Edge: %d - %d, Weight: %d\n", nextEdge.src, nextEdge.dest, nextEdge.weight);
+            unionSets(subsets, x, y);
+            mstEdges++;
+        }
+    }
+}
+
+int main() {
+    // Example graph with edges: {src, dest, weight}
+    struct Edge edges[] = {
+        {0, 1, 10},
+        {0, 2, 6},
+        {0, 3, 5},
+        {1, 3, 15},
+        {2, 3, 4}
+    };
+    int V = 4;  // Number of vertices
+    int E = 5;  // Number of edges
+
+    printf("Edges in the Minimum Spanning Tree (MST):\n");
+    kruskalMST(edges, V, E);
+
+    return 0;
+}
+
