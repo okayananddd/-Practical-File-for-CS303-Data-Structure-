@@ -1,0 +1,137 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+
+// Structure for Queue
+struct Queue {
+    int front, rear, size;
+    unsigned actualSize;
+    int* arr;
+};
+
+// Function to create a queue
+struct Queue* createQueue(unsigned actualSize) {
+    struct Queue* queue = (struct Queue*)malloc(sizeof(struct Queue));
+    queue->actualSize = actualSize;
+    queue->front = queue->rear = -1;
+    queue->size = 0;
+    queue->arr = (int*)malloc(queue->actualSize * sizeof(int));
+    return queue;
+}
+
+// Check if the queue is full
+int isFull(struct Queue* queue) {
+    return (queue->size == queue->actualSize);
+}
+
+// Enqueue operation
+void enqueue(struct Queue* queue, int item) {
+    if (isFull(queue)) {
+        printf("Queue is full. Cannot enqueue %d.\n", item);
+        return;
+    }
+    if (queue->rear == -1) {
+        queue->front = 0;
+        queue->rear = 0;
+    } else {
+        queue->rear = (queue->rear + 1) % queue->actualSize;
+    }
+    queue->arr[queue->rear] = item;
+    queue->size++;
+    printf("%d enqueued to queue.\n", item);
+}
+
+// Check if the queue is empty
+int isEmpty(struct Queue* queue) {
+    return (queue->size == 0);
+}
+
+// Dequeue operation
+int dequeue(struct Queue* queue) {
+    if (isEmpty(queue)) {
+        printf("Queue is empty.\n");
+        return INT_MIN;
+    }
+    int item = queue->arr[queue->front];
+    if (queue->front == queue->rear) {
+        queue->front = queue->rear = -1;
+    } else {
+        queue->front = (queue->front + 1) % queue->actualSize;
+    }
+    queue->size--;
+    return item;
+}
+
+// Return the front element of the queue
+int front(struct Queue* queue) {
+    if (isEmpty(queue)) {
+        return INT_MIN;
+    }
+    return queue->arr[queue->front];
+}
+
+// Return the rear element of the queue
+int rear(struct Queue* queue) {
+    if (isEmpty(queue)) {
+        return INT_MIN;
+    }
+    return queue->arr[queue->rear];
+}
+
+int main() {
+    int val, n;
+    struct Queue* queue = createQueue(1000); // Create a queue with size 1000
+
+    do {
+        printf("\n**************************MENU*************\n");
+        printf("1. ENQUEUE\n");
+        printf("2. DEQUEUE\n");
+        printf("3. IS EMPTY\n");
+        printf("4. IS FULL\n");
+        printf("5. FRONT ELEMENT\n");
+        printf("6. LAST ELEMENT\n");
+        printf("7. EXIT\n");
+        printf("Enter your choice: ");
+        scanf("%d", &n);
+
+        switch(n) {
+            case 1:
+                printf("Enter the value to enqueue: ");
+                scanf("%d", &val);
+                enqueue(queue, val);
+                break;
+            case 2:
+                val = dequeue(queue);
+                if (val != INT_MIN) {
+                    printf("Dequeued value: %d\n", val);
+                }
+                break;
+            case 3:
+                printf("IsEmpty: %d\n", isEmpty(queue));
+                break;
+            case 4:
+                printf("IsFull: %d\n", isFull(queue));
+                break;
+            case 5:
+                printf("Front element: %d\n", front(queue));
+                break;
+            case 6:
+                printf("Last element: %d\n", rear(queue));
+                break;
+            case 7:
+                break;
+            default:
+                printf("Wrong choice! Please enter a valid option.\n");
+                break;
+        }
+
+        printf("\nDo you want to continue? (1 for yes, 0 for no): ");
+        scanf("%d", &n);
+    } while(n != 0);
+
+    // Free the allocated memory
+    free(queue->arr);
+    free(queue);
+
+    return 0;
+}
