@@ -1,0 +1,75 @@
+#include <stdio.h>
+#include <limits.h>
+
+#define MAX_VERTICES 10  // Maximum number of vertices in the graph
+
+// Function to find the vertex with the smallest key value that is not in the MST
+int minKey(int key[], int mstSet[], int n) {
+int min = INT_MAX, minIndex;
+
+for (int v = 0; v < n; v++) {
+if (mstSet[v] == 0 && key[v] < min) {
+min = key[v];
+minIndex = v;
+}
+}
+
+return minIndex;
+}
+
+// Function to implement Prim's algorithm
+void primMST(int graph[MAX_VERTICES][MAX_VERTICES], int n) {
+int parent[MAX_VERTICES];  // Array to store the MST
+int key[MAX_VERTICES];     // Key values to select the minimum weight edge
+int mstSet[MAX_VERTICES];  // Set of vertices included in MST
+
+// Initialize key values, parent, and mstSet
+for (int i = 0; i < n; i++) {
+key[i] = INT_MAX;
+mstSet[i] = 0;
+}
+
+key[0] = 0;  // Start with the first vertex
+parent[0] = -1;  // First node is the root of MST
+
+// Construct the MST
+for (int count = 0; count < n - 1; count++) {
+int u = minKey(key, mstSet, n);  // Get the vertex with the smallest key value
+
+mstSet[u] = 1;  // Add this vertex to MST
+
+// Update the key values of the adjacent vertices of u
+for (int v = 0; v < n; v++) {
+// If v is not in the MST and there is an edge from u to v
+if (graph[u][v] != 0 && mstSet[v] == 0 && graph[u][v] < key[v]) {
+key[v] = graph[u][v];
+parent[v] = u;
+}
+}
+}
+
+// Print the edges of the MST
+printf("Edges in the Minimum Spanning Tree (MST):\n");
+for (int i = 1; i < n; i++) {
+printf("%d -- %d == %d\n", parent[i], i, graph[i][parent[i]]);
+}
+}
+
+int main() {
+// Example graph represented as an adjacency matrix
+int graph[MAX_VERTICES][MAX_VERTICES] = {
+{0, 2, 0, 6, 0},
+{2, 0, 3, 8, 5},
+{0, 3, 0, 0, 7},
+{6, 8, 0, 0, 9},
+{0, 5, 7, 9, 0}
+};
+
+int n = 5;  // Number of vertices in the graph
+
+// Run Prim's algorithm to find the MST
+primMST(graph, n);
+
+return 0;
+}
+
